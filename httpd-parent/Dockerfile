@@ -1,4 +1,12 @@
-FROM httpd
+FROM ubuntu 
 
-ONBUILD COPY . /usr/local/apache2/htdocs
-COPY . /usr/local/apache2/htdocs
+# Documents sind in /var/www/html/
+
+RUN apt update 
+RUN apt -y install apache2 
+RUN apt -y install apache2-utils 
+RUN apt clean 
+
+EXPOSE 80
+
+CMD ["apache2ctl","-D","FOREGROUND"]
