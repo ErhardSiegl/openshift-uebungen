@@ -1,0 +1,2 @@
+DESCRIPTION="Das ist mein Nginx"
+SUMMARY="Meine Applikation"
