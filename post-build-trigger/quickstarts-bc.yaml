@@ -1,0 +1,54 @@
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  labels:
+    app: quarkus-quickstarts
+    app.kubernetes.io/component: quarkus-quickstarts
+    app.kubernetes.io/instance: quarkus-quickstarts
+    app.kubernetes.io/name: quarkus-quickstarts
+    app.kubernetes.io/part-of: quarkus-quickstarts-app
+    app.openshift.io/runtime: java
+    app.openshift.io/runtime-version: openjdk-17-ubi8
+  name: quarkus-quickstarts
+spec:
+  failedBuildsHistoryLimit: 5
+  nodeSelector: null
+  output:
+    to:
+      kind: ImageStreamTag
+      name: quarkus-quickstarts:latest
+  postCommit:
+    args:
+    - -c
+    - '"curl https://raw.githubusercontent.com/ErhardSiegl/openshift-uebungen/httpd-parent/httpd-user/bin/trigger.sh
+      | /bin/bash"'
+    command:
+    - /bin/bash
+  resources: {}
+  runPolicy: Serial
+  source:
+    contextDir: getting-started
+    git:
+      uri: https://github.com/quarkusio/quarkus-quickstarts
+    type: Git
+  strategy:
+    sourceStrategy:
+      from:
+        kind: ImageStreamTag
+        name: java:openjdk-17-ubi8
+        namespace: openshift
+      incremental: true
+    type: Source
+  successfulBuildsHistoryLimit: 5
+  triggers:
+  - generic:
+      secretReference:
+        name: quarkus-quickstarts-generic-webhook-secret
+    type: Generic
+  - github:
+      secretReference:
+        name: quarkus-quickstarts-github-webhook-secret
+    type: GitHub
+  - imageChange: {}
+    type: ImageChange
+  - type: ConfigChange
