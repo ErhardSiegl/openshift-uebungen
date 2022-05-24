@@ -1,0 +1,14 @@
+{{- $fullName := include "nginxctr.fullname" . -}}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  creationTimestamp: null
+  labels:
+    {{- include "nginxctr.labels" . | nindent 4 }}
+  name: {{ $fullName }}
+spec:
+  port:
+    targetPort: http
+  to:
+    kind: Service
+    name: {{ $fullName }}
