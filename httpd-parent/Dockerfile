@@ -1,12 +1,20 @@
-FROM ubuntu 
+FROM registry.access.redhat.com/ubi8/ubi:8.0
 
-# Documents sind in /var/www/html/
+MAINTAINER Red Hat Training <training@redhat.com>
 
-RUN apt update 
-RUN apt -y install apache2 
-RUN apt -y install apache2-utils 
-RUN apt clean 
+# DocumentRoot for Apache
+ENV DOCROOT=/var/www/html 
+
+
+RUN   yum install -y --nodocs --disableplugin=subscription-manager httpd && \
+yum clean all --disableplugin=subscription-manager -y && \
+echo "Hello from the httpd container!" > ${DOCROOT}/index.html
+
+# Allows child images to inject their own content into DocumentRoot
+COPY htdocs/ ${DOCROOT}/
+ONBUILD COPY htdocs/ ${DOCROOT}/
 
 EXPOSE 80
 
-CMD ["apache2ctl","-D","FOREGROUND"]
+# Launch httpd
+CMD /usr/sbin/httpd -DFOREGROUND
